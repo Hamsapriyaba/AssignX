@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Wiki</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            padding: 20px;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .sidebar h2 {
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 8px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .topbar {
+            margin-bottom: 30px;
+        }
+        .topbar h1 {
+            font-size: 28px;
+            color: #27ae60;
+            margin: 0;
+        }
+        .wiki-content {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .wiki-content h2 {
+            font-size: 22px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        .wiki-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .wiki-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 15px 0;
+        }
+        .wiki-content ul li {
+            margin: 10px 0;
+            color: #555;
+        }
+        .wiki-content a {
+            color: #27ae60;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .wiki-content a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Project Management</h2>
+        <a href="#" onclick="loadPage('links.html')"><i class="fas fa-home"></i>Dashboard</a>
+        <a href="#" onclick="loadPage('tasklist.html')"><i class="fas fa-tasks"></i>Task List</a>
+        <a href="#" onclick="loadPage('kanban.html')"><i class="fas fa-columns"></i>Kanban Board</a>
+        <a href="#" onclick="loadPage('wiki.html')"><i class="fas fa-book"></i>Project Wiki</a>
+        <a href="#" onclick="loadPage('calendar.html')"><i class="fas fa-calendar-alt"></i>Calendar</a>
+        <a href="#" onclick="loadPage('settings.html')"><i class="fas fa-cog"></i>Settings</a>
+    </div>
+    <div class="main-content" id="main-content">
+        <div class="topbar">
+            <h1>Project Wiki</h1>
+        </div>
+        <div class="wiki-content">
+            <h2>Welcome to the Project Wiki</h2>
+            <p>
+                This is the central hub for all project-related documentation. Here, you'll find guides, resources, and important information to help you navigate and contribute to the project effectively.
+            </p>
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Project Overview</a></li>
+                <li><a href="#goals">Project Goals</a></li>
+                <li><a href="#team">Team Members</a></li>
+                <li><a href="#resources">Resources & Links</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <h2 id="overview">Project Overview</h2>
+            <p>
+                The project aims to develop a comprehensive project management tool that simplifies task tracking, collaboration, and documentation. It is designed to be user-friendly and scalable for teams of all sizes.
+            </p>
+            <h2 id="goals">Project Goals</h2>
+            <ul>
+                <li>Deliver a fully functional project management tool within 6 months.</li>
+                <li>Ensure seamless integration with existing tools and platforms.</li>
+                <li>Provide robust documentation and support for users.</li>
+            </ul>
+            <h2 id="team">Team Members</h2>
+            <p>
+                Meet the team behind the project:
+            </p>
+            <ul>
+                <li><strong>John Doe</strong> - Project Manager</li>
+                <li><strong>Jane Smith</strong> - Lead Developer</li>
+                <li><strong>Alice Johnson</strong> - UI/UX Designer</li>
+                <li><strong>Bob Brown</strong> - QA Engineer</li>
+            </ul>
+            <h2 id="resources">Resources & Links</h2>
+            <p>
+                Here are some useful resources for the project:
+            </p>
+            <ul>
+                <li><a href="#">Project Roadmap</a></li>
+                <li><a href="#">Design Mockups</a></li>
+                <li><a href="#">API Documentation</a></li>
+            </ul>
+            <h2 id="faq">FAQ</h2>
+            <p>
+                <strong>Q: How do I report a bug?</strong><br>
+                A: Please use the bug tracking system to report any issues.
+            </p>
+            <p>
+                <strong>Q: Where can I find the latest updates?</strong><br>
+                A: Check the project dashboard for the latest updates and announcements.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
