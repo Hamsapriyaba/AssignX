@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlignX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: #f8f9fa;
+        }
+        .logo {
+            font-size: 29px;
+            font-weight: bold;
+            color: #27ae60;
+            font-style: italic;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+        }
+        .btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn.outline {
+            background: transparent;
+            border: 2px solid #27ae60;
+            color: #27ae60;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+        }
+        .content {
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 46px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .image-container img {
+            max-width: 90%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AlignX</div>
+        <nav>
+            
+            <a href="login.html">Log in</a>
+            <button class="btn" onclick="window.location.href='signup.html'">Sign up</button>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            <h1>One tool for doing it all, together</h1>
+            <p>AlignX is the project management tool for creators</p>
+            <div class="buttons">
+                <button class="btn" onclick="window.location.href='signup.html'">Sign up </button>
+                
+            </div>
+        </div>
+        <div class="image-container">
+            <img src="img.png" alt="Dashboard Preview">
+        </div>
+    </main>
+</body>
+</html>
