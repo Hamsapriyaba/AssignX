@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlignX - Kanban Board</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; color: black; text-align: center; }
+        .kanban-board { width: 80%; margin: 20px auto; border-collapse: collapse; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background: #0fd841; color: white; }
+        select, input { padding: 5px; border: 1px solid #ccc; }
+        .priority { font-weight: bold; }
+        .urgent { color: red; } .high { color: orange; } .normal { color: green; } .low { color: blue; }
+    </style>
+</head>
+<body>
+    <h2>Kanban Board</h2>
+    <table class="kanban-board">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Assignee</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" value="Task 1"></td>
+                <td><input type="text" value="Name"></td>
+                <td><input type="date" value="2025-03-01"></td>
+                <td>
+                    <select onchange="updatePriority(this)">
+                        <option value="Urgent" selected>Urgent</option>
+                        <option value="High">High</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option selected>To Do</option>
+                        <option>In Progress</option>
+                        <option>Done</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" value="Task 2"></td>
+                <td><input type="text" value="Name"></td>
+                <td><input type="date" value="2025-03-05"></td>
+                <td>
+                    <select onchange="updatePriority(this)">
+                        <option value="Urgent">Urgent</option>
+                        <option value="High" selected>High</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option>To Do</option>
+                        <option selected>In Progress</option>
+                        <option>Done</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" value="Task 3"></td>
+                <td><input type="text" value="Name"></td>
+                <td><input type="date" value="2025-03-10"></td>
+                <td>
+                    <select onchange="updatePriority(this)">
+                        <option value="Urgent">Urgent</option>
+                        <option value="High">High</option>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option>To Do</option>
+                        <option>In Progress</option>
+                        <option selected>Done</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function updatePriority(selectElement) {
+            const priority = selectElement.value;
+            selectElement.className = priority.toLowerCase();
+        }
+    </script>
+</body>
+</html>
