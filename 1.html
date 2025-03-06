@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        input[type="file"], input[type="text"] {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Search</h1>
+        <input type="file" id="fileInput" accept=".csv, .pdf, .docx">
+        <input type="text" id="searchInput" placeholder="Enter a word to search">
+        <button onclick="searchFile()">Search</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function searchFile() {
+            const fileInput = document.getElementById('fileInput');
+            const searchInput = document.getElementById('searchInput');
+            const resultDiv = document.getElementById('result');
+
+            if (!fileInput.files[0] || !searchInput.value) {
+                alert('Please upload a file and enter a search term.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('search', searchInput.value);
+
+            resultDiv.innerHTML = 'Searching...';
+
+            const response = await fetch('/search', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.text();
+            resultDiv.innerHTML = data;
+        }
+    </script>
+</body>
+</html>
