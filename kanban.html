@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlignX - Kanban Board</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            padding: 20px;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .sidebar h2 {
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            font-size: 16px;
+            width: 100%;
+            border-radius: 8px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover {
+            background: rgba(19, 18, 18, 0.1);
+            transform: translateX(5px);
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .kanban-board { width: 80%; margin: 20px auto; border-collapse: collapse; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background: #0fd841; color: white; }
+        select, input { padding: 5px; border: 1px solid #ccc; }
+        .priority { font-weight: bold; }
+        .urgent { color: red; } .high { color: orange; } .normal { color: green; } .low { color: blue; }
+        .task-form { margin-bottom: 20px; }
+        .task-form input, .task-form select { margin-right: 10px; padding: 5px; }
+        .task-form button { padding: 5px 10px; background: #27ae60; color: white; border: none; cursor: pointer; }
+    </style>
+    <script>
+        let tasks = [];
+
+        // Fetch tasks from the server
+        function loadTasks() {
+            console.log("Fetching tasks from /get_tasks..."); // Debugging
+            fetch('/get_tasks')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Tasks fetched successfully:", data); // Debugging
+                    tasks = data;
+                    displayTasks();
+                })
+                .catch(error => {
+                    console.error("Error fetching tasks:", error); // Debugging
+                });
+        }
+
+        // Display tasks in the table
+        function displayTasks() {
+            let container = document.getElementById("task-list");
+            container.innerHTML = "";
+
+            tasks.forEach((task) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><input type="text" value="${task.task_name}"></td>
+                    <td><input type="text" value="${task.assignee}"></td>
+                    <td><input type="date" value="${task.due_date}"></td>
+                    <td>
+                        <select onchange="updatePriority(this, ${task.id})">
+                            <option value="Urgent" ${task.priority === 'Urgent' ? 'selected' : ''}>Urgent</option>
+                            <option value="High" ${task.priority === 'High' ? 'selected' : ''}>High</option>
+                            <option value="Normal" ${task.priority === 'Normal' ? 'selected' : ''}>Normal</option>
+                            <option value="Low" ${task.priority === 'Low' ? 'selected' : ''}>Low</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select onchange="updateStatus(this, ${task.id})">
+                            <option value="To Do" ${task.status === 'To Do' ? 'selected' : ''}>To Do</option>
+                            <option value="In Progress" ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Done" ${task.status === 'Done' ? 'selected' : ''}>Done</option>
+                        </select>
+                    </td>
+                    <td><button onclick="deleteTask(${task.id})" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">X</button></td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Add a new task
+        function addTask() {
+            const taskName = document.getElementById("task-name").value;
+            const assignee = document.getElementById("assignee").value;
+            const dueDate = document.getElementById("due-date").value;
+            const priority = document.getElementById("priority").value;
+            const status = document.getElementById("status").value;
+
+            console.log("Task Data:", { taskName, assignee, dueDate, priority, status }); // Debugging
+
+            if (taskName.trim() !== "" && assignee.trim() !== "" && dueDate.trim() !== "") {
+                fetch('/add_task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_name: taskName,
+                        assignee: assignee,
+                        due_date: dueDate,
+                        priority: priority,
+                        status: status
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Add Task Response:", data); // Debugging
+                    if (data.success) {
+                        loadTasks(); // Reload tasks after adding
+                    } else {
+                        console.error("Error:", data.message);
+                    }
+                })
+                .catch(error => console.error("Error adding task:", error));
+            } else {
+                console.error("Error: All fields are required.");
+            }
+        }
+
+        // Load tasks when the page loads
+        window.onload = loadTasks;
+    </script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Project Management</h2>
+        <a href="links.html">📊 Dashboard</a>
+        <a href="#">✅ Task List</a>
+        <a href="kanban.html">📋 Kanban Board</a>
+        <a href="#">📚 Project Wiki</a>
+        <a href="files.html">📅 Files</a>
+        <a href="#">⚙️ Settings</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>Kanban Board</h2>
+
+        <!-- Task Form -->
+        <div class="task-form">
+            <input type="text" id="task-name" placeholder="Task Name">
+            <input type="text" id="assignee" placeholder="Assignee">
+            <input type="date" id="due-date">
+            <select id="priority">
+                <option value="Urgent">Urgent</option>
+                <option value="High">High</option>
+                <option value="Normal">Normal</option>
+                <option value="Low">Low</option>
+            </select>
+            <select id="status">
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+            </select>
+            <button onclick="addTask()">Add Task</button>
+        </div>
+
+        <!-- Task Table -->
+        <table class="kanban-board">
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Assignee</th>
+                    <th>Due Date</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="task-list">
+                <!-- Tasks will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
