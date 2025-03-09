@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Tool</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            padding: 20px;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .sidebar h2 {
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            font-size: 16px;
+            width: 100%;
+            border-radius: 8px;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover {
+            background: rgba(19, 18, 18, 0.1);
+            transform: translateX(5px);
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .topbar h1 {
+            font-size: 28px;
+            color: #27ae60;
+        }
+        .links-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .link {
+            background: #e9f5f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 16px;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .link:hover {
+            background: #d4efdf;
+            transform: translateX(5px);
+        }
+        .input-container {
+            margin-top: 20px;
+            display: flex;
+        }
+        .input-container input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .input-container button {
+            padding: 10px 15px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+    </style>
+    <script>
+        let links = [];
+
+        function loadLinks() {
+            fetch('/get_links')
+                .then(response => response.json())
+                .then(data => {
+                    links = data;
+                    displayLinks();
+                })
+                .catch(error => console.error("Error fetching links:", error));
+        }
+
+        function displayLinks() {
+            let container = document.getElementById("links-container");
+            container.innerHTML = "<h2>Project Links</h2>";
+
+            links.forEach((link) => {
+                let div = document.createElement("div");
+                div.className = "link";
+                div.innerHTML = `<a href="${link.url}" target="_blank">${link.title}</a> 
+                                <button onclick="deleteLink(${link.id})" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">X</button>`;
+                container.appendChild(div);
+            });
+        }
+
+        function addLink() {
+            let linkInput = document.getElementById("link-input").value;
+            if (linkInput.trim() !== "") {
+                fetch('/add_link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: "New Link", url: linkInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadLinks(); // Reload the links after adding a new one
+                        document.getElementById("link-input").value = "";
+                    } else {
+                        console.error("Error:", data.message);
+                    }
+                })
+                .catch(error => console.error("Error adding link:", error));
+            }
+        }
+
+        function deleteLink(id) {
+            fetch('/delete_link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadLinks(); // Reload the links after deleting
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => console.error("Error deleting link:", error));
+        }
+
+        window.onload = loadLinks;
+    </script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Project Management</h2>
+        <a href="#">📊 Dashboard</a>
+        <a href="#">✅ Task List</a>
+        <a href="kanban.html" target="content-frame">📋 Kanban Board</a>
+        <a href="#">📚 Project Wiki</a>
+        <a href="files.html"target="content-frame"></a>📅 Files</a>
+        <a href="#">⚙️ Settings</a>
+    </div>
+    <div class="main-content">
+        <div class="topbar">
+            <h1>Dashboard</h1>
+        </div>
+        <div class="links-container" id="links-container">
+            <h2>Project Links</h2>
+        </div>
+        <div class="input-container">
+            <input type="text" id="link-input" placeholder="Enter new link">
+            <button onclick="addLink()">Add Link</button>
+        </div>
+    </div>
+</body>
+</html>
