@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Search Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+        button { padding: 10px 15px; margin: 10px; cursor: pointer; border: none; background: #007BFF; color: white; border-radius: 5px; }
+        button:hover { background: #0056b3; }
+        input { padding: 8px; width: 80%; margin: 5px 0; }
+        .highlight { background-color: yellow; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>File Search Tool</h2>
+        <p>Select a file type:</p>
+        <button onclick="showSection('docx')">DOCX</button>
+        <button onclick="showSection('pdf')">PDF</button>
+        <button onclick="showSection('csv')">CSV</button>
+        <button onclick="showSection('excel')">Excel</button>
+    </div>
+    
+    <div id="searchSection" class="container hidden">
+        <h3 id="fileTypeTitle"></h3>
+        <input type="file" id="fileInput" multiple><br><br>
+        <input type="text" id="searchWord" placeholder="Enter word">
+        <button onclick="searchFiles()">Search</button>
+        <div id="results"></div>
+    </div>
+
+    <script src="jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="xlsx.mini.min.js"></script>
+    <script>
+        let selectedFileType = "";
+
+        function showSection(type) {
+            selectedFileType = type;
+            document.getElementById("fileTypeTitle").innerText = `Search in ${type.toUpperCase()} files`;
+            document.getElementById("searchSection").classList.remove("hidden");
+        }
+
+        function searchFiles() {
+            const files = document.getElementById("fileInput").files;
+            const searchWord = document.getElementById("searchWord").value.toLowerCase();
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "<h3>Results</h3>";
+
+            if (!files.length) {
+                resultsDiv.innerHTML += "<p>No files uploaded.</p>";
+                return;
+            }
+
+            if (selectedFileType === "docx") searchInDocx(files, searchWord);
+            else if (selectedFileType === "pdf") searchInPDF(files, searchWord);
+            else if (selectedFileType === "csv") searchInCSV(files, searchWord);
+            else if (selectedFileType === "excel") searchInExcel(files, searchWord);
+        }
+
+        function searchInDocx(files, word) {
+            const resultsDiv = document.getElementById("results");
+
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const zip = await JSZip.loadAsync(e.target.result);
+                        const xmlText = await zip.file("word/document.xml").async("text");
+                        let parser = new DOMParser();
+                        let xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                        let paragraphs = Array.from(xmlDoc.getElementsByTagName("w:t"))
+                            .map(node => node.textContent);
+
+                        let matchingParagraphs = paragraphs.filter(p => p.toLowerCase().includes(word));
+                        displayResults(file, matchingParagraphs, word);
+                    } catch (error) {
+                        console.error("Error reading DOCX", error);
+                        resultsDiv.innerHTML += `<p>Error processing ${file.name}. Unsupported format.</p>`;
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function searchInCSV(files, word) {
+            const resultsDiv = document.getElementById("results");
+
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const rows = e.target.result.split("\n");
+                    let matches = [];
+
+                    rows.forEach((row, index) => {
+                        if (row.toLowerCase().includes(word)) {
+                            matches.push(`Line ${index + 1}: ${row}`);
+                        }
+                    });
+
+                    displayResults(file, matches, word);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function displayResults(file, matchingParagraphs, word) {
+            const resultsDiv = document.getElementById("results");
+
+            if (matchingParagraphs.length) {
+                let highlightedText = matchingParagraphs.map(para =>
+                    para.replace(new RegExp(word, 'gi'), match => `<span class='highlight'>${match}</span>`)
+                ).join("<br><br>");
+
+                resultsDiv.innerHTML += `<p><strong>${file.name}</strong>: Match found</p>`;
+                resultsDiv.innerHTML += `<p>${highlightedText}</p>`;
+                resultsDiv.innerHTML += `<a href="${URL.createObjectURL(file)}" download="${file.name}">Download File</a><br><br>`;
+            } else {
+                resultsDiv.innerHTML += `<p><strong>${file.name}</strong>: No matches found.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
