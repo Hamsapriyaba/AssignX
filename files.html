@@ -33,7 +33,7 @@
     </div>
 
     <script src="jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="pdf.min.js"></script>
     <script src="xlsx.mini.min.js"></script>
     <script>
         let selectedFileType = "";
@@ -106,6 +106,44 @@
                 reader.readAsText(file);
             }
         }
+function searchInPDF(files, word) {
+    const resultsDiv = document.getElementById("results");
+
+    for (let file of files) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const typedarray = new Uint8Array(e.target.result);
+
+            pdfjsLib.getDocument({ data: typedarray }).promise.then(pdf => {
+                let matchingLines = [];
+                let promises = [];
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    promises.push(
+                        pdf.getPage(i).then(page => page.getTextContent().then(text => {
+                            text.items.forEach(item => {
+                                let line = item.str.toLowerCase();
+                                if (line.includes(word)) {
+                                    matchingLines.push(`Page ${i}: ${item.str}`);
+                                }
+                            });
+                        }))
+                    );
+                }
+
+                Promise.all(promises).then(() => {
+                    displayResults(file, matchingLines, word);
+                });
+
+            }).catch(error => {
+                console.error("Error processing PDF", error);
+                resultsDiv.innerHTML += `<p>Error processing ${file.name}. Unsupported format.</p>`;
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    }
+}
+
 
         function displayResults(file, matchingParagraphs, word) {
             const resultsDiv = document.getElementById("results");
@@ -118,7 +156,9 @@
                 resultsDiv.innerHTML += `<p><strong>${file.name}</strong>: Match found</p>`;
                 resultsDiv.innerHTML += `<p>${highlightedText}</p>`;
                 resultsDiv.innerHTML += `<a href="${URL.createObjectURL(file)}" download="${file.name}">Download File</a><br><br>`;
-            } 
+            } else {
+                resultsDiv.innerHTML += `<p><strong>${file.name}</strong>: No matches found.</p>`;
+            }
         }
     </script>
 </body>
